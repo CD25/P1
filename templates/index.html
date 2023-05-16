@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Student Marks</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+    <link
+      href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+    <style>
+      .error {
+        color: red;
+        font-size: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Student Marks</h1>
+      <button
+        id="addUserbutton"
+        type="button"
+        class="btn btn-primary"
+        data-toggle="modal"
+        data-target="#exampleModal"
+      >
+        Add user
+      </button>
+      <table class="table mt-3" id="marksTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Maths</th>
+            <th>Science</th>
+            <th>English</th>
+            <th>Total</th>
+            <th>Average</th>
+            <th>Percentage</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+      </table>
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Add User</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form id="my-form">
+                <div class="form-group">
+                  <label for="nameInput">Name:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nameInput"
+                    required
+                  />
+                  <span class="error error-name"></span>
+                </div>
+                <div class="form-group">
+                  <label for="emailInput">Email:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="emailInput"
+                    required
+                  />
+                  <span class="error error-email"></span>
+                </div>
+                <div class="form-group">
+                  <label for="mathsInput">Maths Marks:</label>
+                  <input
+                    type="number"
+                    name="Number"
+                    class="form-control"
+                    id="mathsInput"
+                    min="1"
+                    max="100"
+                    required
+                  />
+                  <span class="error error-maths"></span>
+                </div>
+                <div class="form-group">
+                  <label for="scienceInput">Science Marks:</label>
+                  <input
+                    type="number"
+                    name="scienceInput"
+                    class="form-control"
+                    id="scienceInput"
+                    min="1"
+                    max="100"
+                    required
+                  />
+                  <span class="error error-science"></span>
+                </div>
+                <div class="form-group">
+                  <label for="englishInput">English Marks:</label>
+                  <input
+                    type="number"
+                    name="englishInput"
+                    class="form-control"
+                    id="englishInput"
+                    value="1"
+                    min="1"
+                    max="100"
+                    required
+                  />
+                  <span class="error error-english"></span>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" class="btn btn-primary" id="saveUserButton">
+                Save
+              </button>
+              <!--data-dismiss="modal"-->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      function validateEmail(email) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(email);
+      }
+
+      $(document).ready(function () {
+        $("#addUserbutton").click(function () {
+          $(
+            "#nameInput, #emailInput, #mathsInput, #englishInput, #scienceInput"
+          ).val("");
+          $("#addUserPopup").modal("show");
+        });
+
+        $("#saveUserButton").click(function () {
+          let name = $("#nameInput").val();
+          let email = $("#emailInput").val();
+          let maths = Number($("#mathsInput").val()) || 0;
+          let science = Number($("#scienceInput").val()) || 0;
+          let english = Number($("#englishInput").val()) || 0;
+          const nameError = !name ? "Field required" : "";
+          const emailError = !email ? "Field required" : "";
+          const mathsError = !maths ? "Field required" : "";
+          const scienceError = !science ? "Field required" : "";
+          const englishError = !english ? "Field required" : "";
+          $(".error-name").html(nameError);
+          $(".error-email").html(emailError);
+          $(".error-maths").html(mathsError);
+          $(".error-science").html(scienceError);
+          $(".error-english").html(englishError);
+
+          if (!name || !email || !maths || !science || !english) {
+            return false;
+          }
+
+          let total = maths + science + english;
+          let average = (maths + science + english) / 3;
+          let percentage = (maths + science + english)/300 * 100;
+          addTableRow(
+            name,
+            email,
+            maths,
+            science,
+            english,
+            total,
+            average.toFixed(2),
+            percentage.toFixed(2)
+          );
+          $("#exampleModal").modal("hide");
+        });
+
+        function addTableRow(
+          name,
+          email,
+          maths,
+          science,
+          english,
+          total,
+          average,
+          percentage
+        ) {
+          let newRow = "";
+          newRow += `<tr>
+                <td>${name}</td>
+                <td>${email}</td>
+                <td>${maths}</td>
+                <td>${science}</td>
+                <td>${english}</td>
+                <td>${total}</td>
+                <td>${average}</td>
+                <td>${percentage}</td>
+                <td> <button type="button" id="edit" class="btn btn-secondary">Edit</button></td>
+                <td><button type="button" id="delete" class="btn btn-secondary">Delete</button></td>
+            </tr>`;
+          $("#marksTable").append(newRow);
+        }
+
+        function editTableRow(row) {
+          let name = $(row).find("td:eq(0)").text();
+          let email = $(row).find("td:eq(1)").text();
+          let maths = Number($(row).find("td:eq(2)").text());
+          let science = Number($(row).find("td:eq(3)").text());
+          let english = Number($(row).find("td:eq(4)").text());
+          $("#nameInput").val(name);
+          $("#emailInput").val(email);
+          $("#mathsInput").val(maths);
+          $("#scienceInput").val(science);
+          $("#englishInput").val(english);
+          
+          $("#exampleModal").modal("show");
+        }
+        
+        $("#marksTable").on("click", "#edit", function () {
+          let row = $(this).closest("tr");
+          editTableRow(row);
+        });
+
+        $("#marksTable").on("click", "#delete", function () {
+          $(this).closest("tr").remove();
+        });
+      });
+    </script>
+  </body>
+</html>
